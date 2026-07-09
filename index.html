@@ -92,9 +92,7 @@
       margin: 0 0 18px;
     }
 
-    .tab-button,
-    button,
-    .export-link {
+    button {
       border: 1px solid var(--line);
       background: var(--surface);
       color: var(--ink);
@@ -106,16 +104,16 @@
       cursor: pointer;
     }
 
-    .tab-button[aria-selected="true"],
-    button.primary,
-    .export-link {
-      background: var(--teal);
-      color: #fff;
+    button:hover {
       border-color: var(--teal);
+      color: var(--teal);
     }
 
-    .tab-panel[hidden] {
-      display: none;
+    button:focus-visible,
+    select:focus-visible,
+    input:focus-visible {
+      outline: 3px solid #7fb8b2;
+      outline-offset: 1px;
     }
 
     .metric-grid {
@@ -227,6 +225,19 @@
       min-height: 96px;
     }
 
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      margin: -4px 0 16px;
+    }
+
+    .filter-status {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
     .chart-wrap {
       overflow-x: auto;
     }
@@ -260,10 +271,19 @@
 
     .legend .national::before {
       background: var(--coral);
+      border-radius: 50%;
     }
 
     .legend .regional::before {
       background: var(--indigo);
+    }
+
+    .legend .above-legend::before {
+      background: var(--teal);
+    }
+
+    .legend .below-legend::before {
+      background: var(--coral);
     }
 
     .insight-list {
@@ -339,109 +359,6 @@
       color: #94432d;
     }
 
-    .survey-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
-      gap: 18px;
-      align-items: start;
-    }
-
-    .question {
-      border-bottom: 1px solid var(--line);
-      padding: 15px 0;
-    }
-
-    .question:first-child {
-      padding-top: 0;
-    }
-
-    .question-title {
-      margin-bottom: 9px;
-      font-weight: 690;
-    }
-
-    .scale {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(42px, 1fr));
-      gap: 8px;
-    }
-
-    .scale label {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      min-height: 42px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--ink);
-      cursor: pointer;
-      background: #fff;
-    }
-
-    .scale input {
-      position: absolute;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .scale input:checked + span {
-      background: var(--teal);
-      color: #fff;
-      border-color: var(--teal);
-    }
-
-    .scale span {
-      width: 100%;
-      min-height: 42px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 760;
-    }
-
-    .form-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .response-summary {
-      display: grid;
-      gap: 10px;
-    }
-
-    .score-row {
-      display: grid;
-      grid-template-columns: 1fr 58px;
-      gap: 10px;
-      align-items: center;
-      font-size: 14px;
-    }
-
-    .score-track {
-      height: 10px;
-      background: #edf1ed;
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .score-fill {
-      height: 100%;
-      background: var(--indigo);
-      border-radius: 999px;
-    }
-
-    .notice {
-      padding: 12px 13px;
-      border-radius: 8px;
-      background: var(--teal-2);
-      color: #164743;
-      font-size: 14px;
-      margin-top: 12px;
-    }
-
     .source {
       margin-top: 18px;
       color: var(--muted);
@@ -470,8 +387,7 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .layout,
-      .survey-grid {
+      .layout {
         grid-template-columns: 1fr;
       }
     }
@@ -512,8 +428,9 @@
         display: block;
       }
 
-      .scale {
-        grid-template-columns: repeat(5, minmax(38px, 1fr));
+      .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
       }
     }
   </style>
@@ -523,7 +440,7 @@
     <div class="topbar">
       <div>
         <h1>Rata-rata Lama Sekolah Penduduk 15 Tahun ke Atas Indonesia</h1>
-        <p class="subtitle">Dashboard pendidikan berdasarkan data provinsi 2025. Fokus visualisasi: capaian nasional, ketimpangan antarprovinsi, dan evaluasi dashboard melalui survei.</p>
+        <p class="subtitle">Dashboard pendidikan berdasarkan data provinsi 2025. Fokus visualisasi: capaian nasional dan ketimpangan antarprovinsi.</p>
       </div>
       <div class="date-pill" aria-label="Tahun data">
         Tahun data
@@ -533,12 +450,6 @@
   </header>
 
   <main>
-    <nav class="tabs" aria-label="Navigasi dashboard">
-      <button class="tab-button" type="button" data-tab="dashboard" aria-selected="true">Dashboard</button>
-      <button class="tab-button" type="button" data-tab="survey" aria-selected="false">Form Survei</button>
-      <button class="tab-button" type="button" data-tab="notes" aria-selected="false">Catatan Laporan</button>
-    </nav>
-
     <section id="dashboard" class="tab-panel">
       <div class="metric-grid" id="metricGrid"></div>
 
@@ -554,11 +465,11 @@
           <div class="controls" aria-label="Filter dashboard">
             <label>
               Wilayah
-              <select id="regionFilter"></select>
+              <select id="regionFilter" title="Saring provinsi berdasarkan kelompok wilayah"></select>
             </label>
             <label>
               Tampilan
-              <select id="rankMode">
+              <select id="rankMode" title="Pilih cakupan provinsi yang ditampilkan pada grafik dan tabel">
                 <option value="all">Semua provinsi</option>
                 <option value="top10">10 tertinggi</option>
                 <option value="bottom10">10 terendah</option>
@@ -566,15 +477,21 @@
             </label>
             <label>
               Cari provinsi
-              <input id="searchBox" type="search" placeholder="Contoh: Papua">
+              <input id="searchBox" type="search" placeholder="Contoh: Papua" title="Ketik nama provinsi untuk menyaring hasil">
             </label>
+          </div>
+
+          <div class="filter-bar">
+            <button type="button" id="resetFilters" title="Kembalikan semua filter ke pengaturan awal">Reset Filter</button>
+            <span class="filter-status" id="filterStatus" role="status" aria-live="polite"></span>
           </div>
 
           <div class="chart-wrap">
             <svg id="barChart" role="img" aria-label="Grafik ranking provinsi"></svg>
           </div>
           <div class="legend">
-            <span>Provinsi</span>
+            <span class="above-legend">Provinsi di atas nasional</span>
+            <span class="below-legend">Provinsi di bawah nasional</span>
             <span class="national">Angka nasional</span>
           </div>
         </section>
@@ -642,85 +559,6 @@
       </div>
     </section>
 
-    <section id="survey" class="tab-panel" hidden>
-      <div class="survey-grid">
-        <section class="panel">
-          <div class="panel-header">
-            <div>
-              <h2>Form Survei Evaluasi Dashboard</h2>
-              <p>Skala 1 sampai 5, dari sangat tidak setuju sampai sangat setuju.</p>
-            </div>
-          </div>
-
-          <form id="surveyForm">
-            <label>
-              Nama responden
-              <input type="text" id="respondentName" autocomplete="name" placeholder="Nama dosen atau teman kelas">
-            </label>
-
-            <div id="questionList"></div>
-
-            <label>
-              Saran perbaikan
-              <textarea id="suggestion" placeholder="Tuliskan saran perbaikan dashboard"></textarea>
-            </label>
-
-            <div class="form-actions">
-              <button class="primary" type="submit">Simpan Respon</button>
-              <button type="button" id="exportSurvey">Export CSV</button>
-              <button type="button" id="resetSurvey">Reset Respon</button>
-            </div>
-          </form>
-        </section>
-
-        <aside class="panel">
-          <div class="panel-header">
-            <div>
-              <h3>Ringkasan Respon</h3>
-              <p>Hasil tersimpan di browser ini dan dapat diekspor sebagai CSV.</p>
-            </div>
-          </div>
-          <div id="surveySummary" class="response-summary"></div>
-          <div class="notice" id="surveyNotice">Belum ada respon tersimpan.</div>
-        </aside>
-      </div>
-    </section>
-
-    <section id="notes" class="tab-panel" hidden>
-      <section class="panel">
-        <div class="panel-header">
-          <div>
-            <h2>Catatan Laporan</h2>
-            <p>Bagian ini menyatukan bahan untuk laporan evaluasi sebelum dan sesudah survei.</p>
-          </div>
-        </div>
-        <table class="rank-table">
-          <tbody>
-            <tr>
-              <th>Topik data</th>
-              <td>Rata-rata Lama Sekolah penduduk usia 15 tahun ke atas menurut provinsi, Indonesia 2025.</td>
-            </tr>
-            <tr>
-              <th>Dashboard sebelum survei</th>
-              <td>Gunakan tampilan Dashboard sebagai versi awal. Catat KPI nasional, ranking provinsi, rata-rata wilayah, dan sebaran nilai.</td>
-            </tr>
-            <tr>
-              <th>Metode evaluasi</th>
-              <td>Gunakan Form Survei untuk menilai akurasi data, navigasi, filter, kejelasan visual, dan performa.</td>
-            </tr>
-            <tr>
-              <th>Dashboard setelah survei</th>
-              <td>Isi setelah respon terkumpul. Prioritaskan perbaikan pada indikator dengan skor rata-rata terendah dan saran terbanyak.</td>
-            </tr>
-            <tr>
-              <th>Sumber data</th>
-              <td>Mean Years School of Population Aged 15 Years and Over by Province, 2025.csv.</td>
-            </tr>
-          </tbody>
-        </table>
-        <p class="source">Gunakan tombol Export CSV pada form survei untuk menyimpan bukti respon dan menghitung dasar perbaikan.</p>
-      </section>
-    </section>
   </main>
 
   <div class="footer">
@@ -770,14 +608,6 @@
       { province: "PAPUA PEGUNUNGAN", value: 4.76, region: "Maluku-Papua" }
     ];
 
-    const questions = [
-      "Akurasi Data: Angka dan informasi yang ditampilkan sudah akurat dan sesuai dengan data riil atau sumbernya dapat dipercaya.",
-      "Kemudahan Navigasi: Saya dapat menemukan informasi atau KPI utama yang saya cari dalam waktu kurang dari 5 detik.",
-      "Fungsionalitas Filter: Semua tombol filter wilayah dan tampilan berfungsi dengan baik dan mudah dipahami fungsinya.",
-      "Kejelasan Visual: Grafik, teks, dan pilihan warna di dashboard ini nyaman dilihat serta tidak membingungkan untuk dibaca.",
-      "Kecepatan Performa: Halaman dashboard dan grafiknya memuat data dengan cepat saat diakses atau saat filter diubah."
-    ];
-
     const regionOrder = ["Semua wilayah", "Sumatra", "Jawa", "Bali-Nusa Tenggara", "Kalimantan", "Sulawesi", "Maluku-Papua"];
     const colors = {
       high: "#22766f",
@@ -790,20 +620,6 @@
 
     const formatValue = value => value.toFixed(2);
     const average = rows => rows.reduce((sum, row) => sum + row.value, 0) / rows.length;
-
-    function setTabs() {
-      document.querySelectorAll(".tab-button").forEach(button => {
-        button.addEventListener("click", () => {
-          const target = button.dataset.tab;
-          document.querySelectorAll(".tab-button").forEach(item => {
-            item.setAttribute("aria-selected", item.dataset.tab === target ? "true" : "false");
-          });
-          document.querySelectorAll(".tab-panel").forEach(panel => {
-            panel.hidden = panel.id !== target;
-          });
-        });
-      });
-    }
 
     function populateFilters() {
       const select = document.getElementById("regionFilter");
@@ -1021,131 +837,51 @@
       }).join("");
     }
 
+    function updateFilterStatus(rows) {
+      const region = document.getElementById("regionFilter").value;
+      const search = document.getElementById("searchBox").value.trim();
+      const parts = [`Menampilkan ${rows.length} dari ${data.length} provinsi`];
+      if (region !== "Semua wilayah") parts.push(`wilayah ${region}`);
+      if (search) parts.push(`pencarian "${search}"`);
+      document.getElementById("filterStatus").textContent = parts.join(" · ");
+    }
+
+    function resetFilters() {
+      document.getElementById("regionFilter").value = "Semua wilayah";
+      document.getElementById("rankMode").value = "all";
+      document.getElementById("searchBox").value = "";
+      refreshDashboard();
+    }
+
+    function debounce(fn, delay) {
+      let timer = null;
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => fn(...args), delay);
+      };
+    }
+
     function refreshDashboard() {
       const rows = filteredRows();
       drawBarChart(rows);
       renderInsights(rows);
       renderTable(rows);
-    }
-
-    function buildSurveyQuestions() {
-      document.getElementById("questionList").innerHTML = questions.map((question, index) => {
-        const name = `q${index + 1}`;
-        const options = [1, 2, 3, 4, 5].map(score => `
-          <label>
-            <input type="radio" name="${name}" value="${score}" required>
-            <span>${score}</span>
-          </label>
-        `).join("");
-        return `
-          <div class="question">
-            <div class="question-title">${index + 1}. ${question}</div>
-            <div class="scale">${options}</div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    function getResponses() {
-      try {
-        return JSON.parse(localStorage.getItem("rlsDashboardSurvey") || "[]");
-      } catch (error) {
-        return [];
-      }
-    }
-
-    function saveResponses(responses) {
-      localStorage.setItem("rlsDashboardSurvey", JSON.stringify(responses));
-    }
-
-    function renderSurveySummary() {
-      const responses = getResponses();
-      const summary = document.getElementById("surveySummary");
-      const notice = document.getElementById("surveyNotice");
-      if (!responses.length) {
-        summary.innerHTML = "";
-        notice.textContent = "Belum ada respon tersimpan.";
-        return;
-      }
-
-      const averages = questions.map((_, index) => {
-        const key = `q${index + 1}`;
-        return responses.reduce((sum, response) => sum + Number(response[key]), 0) / responses.length;
-      });
-
-      summary.innerHTML = averages.map((score, index) => `
-        <div class="score-row">
-          <div>
-            <strong>P${index + 1}</strong>
-            <div class="score-track"><div class="score-fill" style="width: ${(score / 5) * 100}%"></div></div>
-          </div>
-          <strong>${score.toFixed(2)}</strong>
-        </div>
-      `).join("");
-      const lowest = averages.reduce((minIndex, score, index) => score < averages[minIndex] ? index : minIndex, 0);
-      notice.textContent = `${responses.length} respon tersimpan. Prioritas perbaikan sementara: Pernyataan ${lowest + 1} dengan rata-rata ${averages[lowest].toFixed(2)}.`;
-    }
-
-    function handleSurveySubmit(event) {
-      event.preventDefault();
-      const form = event.currentTarget;
-      const formData = new FormData(form);
-      const response = {
-        timestamp: new Date().toISOString(),
-        name: document.getElementById("respondentName").value.trim() || "Anonim",
-        suggestion: document.getElementById("suggestion").value.trim()
-      };
-      questions.forEach((_, index) => {
-        response[`q${index + 1}`] = formData.get(`q${index + 1}`);
-      });
-      const responses = getResponses();
-      responses.push(response);
-      saveResponses(responses);
-      form.reset();
-      renderSurveySummary();
-    }
-
-    function exportSurveyCsv() {
-      const responses = getResponses();
-      const headers = ["timestamp", "name", "q1", "q2", "q3", "q4", "q5", "suggestion"];
-      const lines = [headers.join(",")].concat(responses.map(response => headers.map(header => {
-        const value = String(response[header] || "").replaceAll('"', '""');
-        return `"${value}"`;
-      }).join(",")));
-      const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-      anchor.href = url;
-      anchor.download = "respon_survei_dashboard_rls_2025.csv";
-      document.body.append(anchor);
-      anchor.click();
-      anchor.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    function resetSurvey() {
-      const ok = confirm("Hapus semua respon survei yang tersimpan di browser ini?");
-      if (!ok) return;
-      localStorage.removeItem("rlsDashboardSurvey");
-      renderSurveySummary();
+      updateFilterStatus(rows);
     }
 
     function init() {
-      setTabs();
       populateFilters();
       renderMetrics();
       drawRegionChart();
       drawHistogram();
       refreshDashboard();
-      buildSurveyQuestions();
-      renderSurveySummary();
+
+      const debouncedRefresh = debounce(refreshDashboard, 120);
 
       document.getElementById("regionFilter").addEventListener("change", refreshDashboard);
       document.getElementById("rankMode").addEventListener("change", refreshDashboard);
-      document.getElementById("searchBox").addEventListener("input", refreshDashboard);
-      document.getElementById("surveyForm").addEventListener("submit", handleSurveySubmit);
-      document.getElementById("exportSurvey").addEventListener("click", exportSurveyCsv);
-      document.getElementById("resetSurvey").addEventListener("click", resetSurvey);
+      document.getElementById("searchBox").addEventListener("input", debouncedRefresh);
+      document.getElementById("resetFilters").addEventListener("click", resetFilters);
     }
 
     init();
