@@ -1,0 +1,1154 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard RLS Indonesia 2025</title>
+  <style>
+    :root {
+      --bg: #f6f7f4;
+      --surface: #ffffff;
+      --ink: #1d2528;
+      --muted: #607078;
+      --line: #dfe5df;
+      --teal: #22766f;
+      --teal-2: #d9efeb;
+      --indigo: #4054a4;
+      --coral: #c9573d;
+      --gold: #b68122;
+      --green: #2e7d42;
+      --shadow: 0 16px 40px rgba(31, 48, 53, 0.10);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.45;
+    }
+
+    header {
+      background: #0f3134;
+      color: #fff;
+      padding: 28px 24px 22px;
+      border-bottom: 6px solid #e2a23a;
+    }
+
+    .topbar {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 820px;
+      font-size: 34px;
+      line-height: 1.12;
+      font-weight: 760;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 10px 0 0;
+      max-width: 820px;
+      color: #d7e4e1;
+      font-size: 15px;
+    }
+
+    .date-pill {
+      min-width: 150px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 8px;
+      text-align: right;
+      color: #f4f7f5;
+    }
+
+    .date-pill strong {
+      display: block;
+      font-size: 26px;
+      line-height: 1;
+    }
+
+    main {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 22px 24px 42px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 0 0 18px;
+    }
+
+    .tab-button,
+    button,
+    .export-link {
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
+      border-radius: 8px;
+      min-height: 40px;
+      padding: 9px 14px;
+      font: inherit;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    .tab-button[aria-selected="true"],
+    button.primary,
+    .export-link {
+      background: var(--teal);
+      color: #fff;
+      border-color: var(--teal);
+    }
+
+    .tab-panel[hidden] {
+      display: none;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .metric {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      min-height: 132px;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .metric .value {
+      margin-top: 8px;
+      font-size: 34px;
+      line-height: 1.05;
+      font-weight: 780;
+    }
+
+    .metric .note {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .panel h2,
+    .panel h3 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+
+    .panel p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: #314045;
+    }
+
+    select,
+    input[type="search"],
+    input[type="text"],
+    textarea {
+      width: 100%;
+      min-height: 40px;
+      margin-top: 5px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 9px 10px;
+      font: inherit;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 96px;
+    }
+
+    .chart-wrap {
+      overflow-x: auto;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      font-family: inherit;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .legend span::before {
+      content: "";
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      margin-right: 6px;
+      border-radius: 2px;
+      vertical-align: -1px;
+      background: var(--teal);
+    }
+
+    .legend .national::before {
+      background: var(--coral);
+    }
+
+    .legend .regional::before {
+      background: var(--indigo);
+    }
+
+    .insight-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .insight-list li {
+      border-left: 4px solid var(--teal);
+      background: #f7faf8;
+      border-radius: 6px;
+      padding: 10px 12px;
+      color: #314045;
+    }
+
+    .insight-list li.warn {
+      border-color: var(--coral);
+    }
+
+    .insight-list li.good {
+      border-color: var(--green);
+    }
+
+    .rank-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .rank-table th,
+    .rank-table td {
+      padding: 9px 8px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+    }
+
+    .rank-table th {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .rank-table td:last-child,
+    .rank-table th:last-child {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      min-width: 86px;
+      justify-content: center;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 700;
+      background: #f1f4f0;
+      color: #526267;
+    }
+
+    .status.above {
+      background: #e1f2e5;
+      color: #23663a;
+    }
+
+    .status.below {
+      background: #fde8df;
+      color: #94432d;
+    }
+
+    .survey-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .question {
+      border-bottom: 1px solid var(--line);
+      padding: 15px 0;
+    }
+
+    .question:first-child {
+      padding-top: 0;
+    }
+
+    .question-title {
+      margin-bottom: 9px;
+      font-weight: 690;
+    }
+
+    .scale {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(42px, 1fr));
+      gap: 8px;
+    }
+
+    .scale label {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink);
+      cursor: pointer;
+      background: #fff;
+    }
+
+    .scale input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .scale input:checked + span {
+      background: var(--teal);
+      color: #fff;
+      border-color: var(--teal);
+    }
+
+    .scale span {
+      width: 100%;
+      min-height: 42px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 760;
+    }
+
+    .form-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .response-summary {
+      display: grid;
+      gap: 10px;
+    }
+
+    .score-row {
+      display: grid;
+      grid-template-columns: 1fr 58px;
+      gap: 10px;
+      align-items: center;
+      font-size: 14px;
+    }
+
+    .score-track {
+      height: 10px;
+      background: #edf1ed;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .score-fill {
+      height: 100%;
+      background: var(--indigo);
+      border-radius: 999px;
+    }
+
+    .notice {
+      padding: 12px 13px;
+      border-radius: 8px;
+      background: var(--teal-2);
+      color: #164743;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    .source {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .empty-state {
+      padding: 22px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      background: #fbfcfb;
+    }
+
+    .footer {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 24px 28px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    @media (max-width: 980px) {
+      .metric-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .layout,
+      .survey-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 680px) {
+      header {
+        padding: 22px 16px 18px;
+      }
+
+      .topbar {
+        display: block;
+      }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      .date-pill {
+        margin-top: 16px;
+        text-align: left;
+        width: 100%;
+      }
+
+      main {
+        padding: 16px 14px 32px;
+      }
+
+      .metric-grid,
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
+      .panel {
+        padding: 15px;
+      }
+
+      .panel-header {
+        display: block;
+      }
+
+      .scale {
+        grid-template-columns: repeat(5, minmax(38px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div>
+        <h1>Rata-rata Lama Sekolah Penduduk 15 Tahun ke Atas Indonesia</h1>
+        <p class="subtitle">Dashboard pendidikan berdasarkan data provinsi 2025. Fokus visualisasi: capaian nasional, ketimpangan antarprovinsi, dan evaluasi dashboard melalui survei.</p>
+      </div>
+      <div class="date-pill" aria-label="Tahun data">
+        Tahun data
+        <strong>2025</strong>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <nav class="tabs" aria-label="Navigasi dashboard">
+      <button class="tab-button" type="button" data-tab="dashboard" aria-selected="true">Dashboard</button>
+      <button class="tab-button" type="button" data-tab="survey" aria-selected="false">Form Survei</button>
+      <button class="tab-button" type="button" data-tab="notes" aria-selected="false">Catatan Laporan</button>
+    </nav>
+
+    <section id="dashboard" class="tab-panel">
+      <div class="metric-grid" id="metricGrid"></div>
+
+      <div class="layout">
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Ranking Provinsi</h2>
+              <p>Bandingkan nilai rata-rata lama sekolah setiap provinsi terhadap angka nasional.</p>
+            </div>
+          </div>
+
+          <div class="controls" aria-label="Filter dashboard">
+            <label>
+              Wilayah
+              <select id="regionFilter"></select>
+            </label>
+            <label>
+              Tampilan
+              <select id="rankMode">
+                <option value="all">Semua provinsi</option>
+                <option value="top10">10 tertinggi</option>
+                <option value="bottom10">10 terendah</option>
+              </select>
+            </label>
+            <label>
+              Cari provinsi
+              <input id="searchBox" type="search" placeholder="Contoh: Papua">
+            </label>
+          </div>
+
+          <div class="chart-wrap">
+            <svg id="barChart" role="img" aria-label="Grafik ranking provinsi"></svg>
+          </div>
+          <div class="legend">
+            <span>Provinsi</span>
+            <span class="national">Angka nasional</span>
+          </div>
+        </section>
+
+        <aside>
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h3>Temuan Utama</h3>
+                <p>Ringkasan otomatis dari data yang sedang tampil.</p>
+              </div>
+            </div>
+            <ul class="insight-list" id="insightList"></ul>
+          </section>
+
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h3>Perbandingan Wilayah</h3>
+                <p>Rata-rata provinsi di setiap kelompok wilayah.</p>
+              </div>
+            </div>
+            <svg id="regionChart" role="img" aria-label="Grafik rata-rata wilayah"></svg>
+            <div class="legend">
+              <span class="regional">Rata-rata wilayah</span>
+              <span class="national">Angka nasional</span>
+            </div>
+          </section>
+        </aside>
+      </div>
+
+      <div class="layout">
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Sebaran Nilai</h2>
+              <p>Distribusi provinsi menurut rentang rata-rata lama sekolah.</p>
+            </div>
+          </div>
+          <svg id="histogram" role="img" aria-label="Histogram sebaran nilai"></svg>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Tabel Data</h2>
+              <p>Urutan mengikuti hasil filter aktif.</p>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <table class="rank-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Provinsi</th>
+                  <th>Wilayah</th>
+                  <th>Status</th>
+                  <th>RLS</th>
+                </tr>
+              </thead>
+              <tbody id="rankTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section id="survey" class="tab-panel" hidden>
+      <div class="survey-grid">
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Form Survei Evaluasi Dashboard</h2>
+              <p>Skala 1 sampai 5, dari sangat tidak setuju sampai sangat setuju.</p>
+            </div>
+          </div>
+
+          <form id="surveyForm">
+            <label>
+              Nama responden
+              <input type="text" id="respondentName" autocomplete="name" placeholder="Nama dosen atau teman kelas">
+            </label>
+
+            <div id="questionList"></div>
+
+            <label>
+              Saran perbaikan
+              <textarea id="suggestion" placeholder="Tuliskan saran perbaikan dashboard"></textarea>
+            </label>
+
+            <div class="form-actions">
+              <button class="primary" type="submit">Simpan Respon</button>
+              <button type="button" id="exportSurvey">Export CSV</button>
+              <button type="button" id="resetSurvey">Reset Respon</button>
+            </div>
+          </form>
+        </section>
+
+        <aside class="panel">
+          <div class="panel-header">
+            <div>
+              <h3>Ringkasan Respon</h3>
+              <p>Hasil tersimpan di browser ini dan dapat diekspor sebagai CSV.</p>
+            </div>
+          </div>
+          <div id="surveySummary" class="response-summary"></div>
+          <div class="notice" id="surveyNotice">Belum ada respon tersimpan.</div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="notes" class="tab-panel" hidden>
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h2>Catatan Laporan</h2>
+            <p>Bagian ini menyatukan bahan untuk laporan evaluasi sebelum dan sesudah survei.</p>
+          </div>
+        </div>
+        <table class="rank-table">
+          <tbody>
+            <tr>
+              <th>Topik data</th>
+              <td>Rata-rata Lama Sekolah penduduk usia 15 tahun ke atas menurut provinsi, Indonesia 2025.</td>
+            </tr>
+            <tr>
+              <th>Dashboard sebelum survei</th>
+              <td>Gunakan tampilan Dashboard sebagai versi awal. Catat KPI nasional, ranking provinsi, rata-rata wilayah, dan sebaran nilai.</td>
+            </tr>
+            <tr>
+              <th>Metode evaluasi</th>
+              <td>Gunakan Form Survei untuk menilai akurasi data, navigasi, filter, kejelasan visual, dan performa.</td>
+            </tr>
+            <tr>
+              <th>Dashboard setelah survei</th>
+              <td>Isi setelah respon terkumpul. Prioritaskan perbaikan pada indikator dengan skor rata-rata terendah dan saran terbanyak.</td>
+            </tr>
+            <tr>
+              <th>Sumber data</th>
+              <td>Mean Years School of Population Aged 15 Years and Over by Province, 2025.csv.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="source">Gunakan tombol Export CSV pada form survei untuk menyimpan bukti respon dan menghitung dasar perbaikan.</p>
+      </section>
+    </section>
+  </main>
+
+  <div class="footer">
+    Sumber data: Mean Years School of Population Aged 15 Years and Over by Province, 2025.csv. Angka RLS menunjukkan rata-rata tahun sekolah penduduk usia 15 tahun ke atas.
+  </div>
+
+  <script>
+    const nationalValue = 9.41;
+    const data = [
+      { province: "ACEH", value: 10.42, region: "Sumatra" },
+      { province: "SUMATERA UTARA", value: 10.29, region: "Sumatra" },
+      { province: "SUMATERA BARAT", value: 10.03, region: "Sumatra" },
+      { province: "RIAU", value: 9.80, region: "Sumatra" },
+      { province: "JAMBI", value: 9.32, region: "Sumatra" },
+      { province: "SUMATERA SELATAN", value: 9.28, region: "Sumatra" },
+      { province: "BENGKULU", value: 9.71, region: "Sumatra" },
+      { province: "LAMPUNG", value: 9.00, region: "Sumatra" },
+      { province: "KEP. BANGKA BELITUNG", value: 9.09, region: "Sumatra" },
+      { province: "KEP. RIAU", value: 10.78, region: "Sumatra" },
+      { province: "DKI JAKARTA", value: 11.58, region: "Jawa" },
+      { province: "JAWA BARAT", value: 9.46, region: "Jawa" },
+      { province: "JAWA TENGAH", value: 8.62, region: "Jawa" },
+      { province: "DI YOGYAKARTA", value: 10.58, region: "Jawa" },
+      { province: "JAWA TIMUR", value: 8.81, region: "Jawa" },
+      { province: "BANTEN", value: 9.82, region: "Jawa" },
+      { province: "BALI", value: 10.07, region: "Bali-Nusa Tenggara" },
+      { province: "NUSA TENGGARA BARAT", value: 8.87, region: "Bali-Nusa Tenggara" },
+      { province: "NUSA TENGGARA TIMUR", value: 8.88, region: "Bali-Nusa Tenggara" },
+      { province: "KALIMANTAN BARAT", value: 8.54, region: "Kalimantan" },
+      { province: "KALIMANTAN TENGAH", value: 9.36, region: "Kalimantan" },
+      { province: "KALIMANTAN SELATAN", value: 9.17, region: "Kalimantan" },
+      { province: "KALIMANTAN TIMUR", value: 10.30, region: "Kalimantan" },
+      { province: "KALIMANTAN UTARA", value: 9.69, region: "Kalimantan" },
+      { province: "SULAWESI UTARA", value: 10.10, region: "Sulawesi" },
+      { province: "SULAWESI TENGAH", value: 9.38, region: "Sulawesi" },
+      { province: "SULAWESI SELATAN", value: 9.38, region: "Sulawesi" },
+      { province: "SULAWESI TENGGARA", value: 9.90, region: "Sulawesi" },
+      { province: "GORONTALO", value: 8.78, region: "Sulawesi" },
+      { province: "SULAWESI BARAT", value: 8.91, region: "Sulawesi" },
+      { province: "MALUKU", value: 10.63, region: "Maluku-Papua" },
+      { province: "MALUKU UTARA", value: 9.78, region: "Maluku-Papua" },
+      { province: "PAPUA BARAT", value: 9.90, region: "Maluku-Papua" },
+      { province: "PAPUA BARAT DAYA", value: 10.60, region: "Maluku-Papua" },
+      { province: "PAPUA", value: 10.65, region: "Maluku-Papua" },
+      { province: "PAPUA SELATAN", value: 8.87, region: "Maluku-Papua" },
+      { province: "PAPUA TENGAH", value: 6.27, region: "Maluku-Papua" },
+      { province: "PAPUA PEGUNUNGAN", value: 4.76, region: "Maluku-Papua" }
+    ];
+
+    const questions = [
+      "Akurasi Data: Angka dan informasi yang ditampilkan sudah akurat dan sesuai dengan data riil atau sumbernya dapat dipercaya.",
+      "Kemudahan Navigasi: Saya dapat menemukan informasi atau KPI utama yang saya cari dalam waktu kurang dari 5 detik.",
+      "Fungsionalitas Filter: Semua tombol filter wilayah dan tampilan berfungsi dengan baik dan mudah dipahami fungsinya.",
+      "Kejelasan Visual: Grafik, teks, dan pilihan warna di dashboard ini nyaman dilihat serta tidak membingungkan untuk dibaca.",
+      "Kecepatan Performa: Halaman dashboard dan grafiknya memuat data dengan cepat saat diakses atau saat filter diubah."
+    ];
+
+    const regionOrder = ["Semua wilayah", "Sumatra", "Jawa", "Bali-Nusa Tenggara", "Kalimantan", "Sulawesi", "Maluku-Papua"];
+    const colors = {
+      high: "#22766f",
+      low: "#c9573d",
+      neutral: "#4054a4",
+      region: "#4054a4",
+      national: "#c9573d",
+      axis: "#738188"
+    };
+
+    const formatValue = value => value.toFixed(2);
+    const average = rows => rows.reduce((sum, row) => sum + row.value, 0) / rows.length;
+
+    function setTabs() {
+      document.querySelectorAll(".tab-button").forEach(button => {
+        button.addEventListener("click", () => {
+          const target = button.dataset.tab;
+          document.querySelectorAll(".tab-button").forEach(item => {
+            item.setAttribute("aria-selected", item.dataset.tab === target ? "true" : "false");
+          });
+          document.querySelectorAll(".tab-panel").forEach(panel => {
+            panel.hidden = panel.id !== target;
+          });
+        });
+      });
+    }
+
+    function populateFilters() {
+      const select = document.getElementById("regionFilter");
+      select.innerHTML = regionOrder.map(region => `<option value="${region}">${region}</option>`).join("");
+      select.value = "Semua wilayah";
+    }
+
+    function filteredRows() {
+      const region = document.getElementById("regionFilter").value;
+      const mode = document.getElementById("rankMode").value;
+      const search = document.getElementById("searchBox").value.trim().toLowerCase();
+      let rows = data.slice();
+
+      if (region !== "Semua wilayah") {
+        rows = rows.filter(row => row.region === region);
+      }
+      if (search) {
+        rows = rows.filter(row => row.province.toLowerCase().includes(search));
+      }
+
+      rows.sort((a, b) => b.value - a.value);
+      if (mode === "top10") rows = rows.slice(0, 10);
+      if (mode === "bottom10") rows = rows.slice(-10).reverse();
+      return rows;
+    }
+
+    function renderMetrics() {
+      const sorted = data.slice().sort((a, b) => b.value - a.value);
+      const top = sorted[0];
+      const bottom = sorted[sorted.length - 1];
+      const above = data.filter(row => row.value >= nationalValue).length;
+      const gap = top.value - bottom.value;
+      const cards = [
+        { label: "Angka nasional", value: formatValue(nationalValue), note: "tahun sekolah rata-rata" },
+        { label: "Provinsi tertinggi", value: top.province, note: `${formatValue(top.value)} tahun` },
+        { label: "Provinsi terendah", value: bottom.province, note: `${formatValue(bottom.value)} tahun` },
+        { label: "Di atas nasional", value: `${above}/${data.length}`, note: `rentang tertinggi-terendah ${formatValue(gap)} tahun` }
+      ];
+      document.getElementById("metricGrid").innerHTML = cards.map(card => `
+        <article class="metric">
+          <div class="label">${card.label}</div>
+          <div class="value">${card.value}</div>
+          <div class="note">${card.note}</div>
+        </article>
+      `).join("");
+    }
+
+    function drawBarChart(rows) {
+      const svg = document.getElementById("barChart");
+      if (!rows.length) {
+        svg.setAttribute("viewBox", "0 0 720 120");
+        svg.innerHTML = `<text x="360" y="64" text-anchor="middle" fill="${colors.axis}" font-size="15">Tidak ada data yang sesuai filter.</text>`;
+        return;
+      }
+
+      const width = 860;
+      const rowHeight = 28;
+      const margin = { top: 20, right: 62, bottom: 28, left: 184 };
+      const height = margin.top + margin.bottom + rows.length * rowHeight;
+      const maxValue = Math.max(12, ...rows.map(row => row.value));
+      const chartWidth = width - margin.left - margin.right;
+      const x = value => margin.left + (value / maxValue) * chartWidth;
+      const nationalX = x(nationalValue);
+
+      const bars = rows.map((row, index) => {
+        const y = margin.top + index * rowHeight;
+        const barWidth = Math.max(2, x(row.value) - margin.left);
+        const statusColor = row.value >= nationalValue ? colors.high : colors.low;
+        return `
+          <text x="${margin.left - 10}" y="${y + 17}" text-anchor="end" fill="#2f3a3e" font-size="12">${row.province}</text>
+          <rect x="${margin.left}" y="${y + 5}" width="${barWidth}" height="15" rx="3" fill="${statusColor}"></rect>
+          <text x="${x(row.value) + 7}" y="${y + 17}" fill="#2f3a3e" font-size="12" font-weight="700">${formatValue(row.value)}</text>
+        `;
+      }).join("");
+
+      const ticks = [0, 3, 6, 9, 12].map(tick => {
+        const tx = x(tick);
+        return `
+          <line x1="${tx}" y1="${margin.top - 6}" x2="${tx}" y2="${height - margin.bottom + 4}" stroke="#edf1ed"></line>
+          <text x="${tx}" y="${height - 8}" text-anchor="middle" fill="${colors.axis}" font-size="11">${tick}</text>
+        `;
+      }).join("");
+
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      svg.innerHTML = `
+        ${ticks}
+        <line x1="${nationalX}" y1="${margin.top - 8}" x2="${nationalX}" y2="${height - margin.bottom + 4}" stroke="${colors.national}" stroke-width="2" stroke-dasharray="5 5"></line>
+        <text x="${nationalX + 6}" y="${margin.top - 9}" fill="${colors.national}" font-size="12" font-weight="700">Nasional ${formatValue(nationalValue)}</text>
+        ${bars}
+      `;
+    }
+
+    function drawRegionChart() {
+      const svg = document.getElementById("regionChart");
+      const regions = regionOrder.slice(1).map(region => {
+        const rows = data.filter(row => row.region === region);
+        return { region, value: average(rows), count: rows.length };
+      });
+      const width = 420;
+      const height = 278;
+      const margin = { top: 18, right: 22, bottom: 76, left: 42 };
+      const maxValue = 12;
+      const chartWidth = width - margin.left - margin.right;
+      const chartHeight = height - margin.top - margin.bottom;
+      const barGap = 8;
+      const barWidth = (chartWidth - barGap * (regions.length - 1)) / regions.length;
+      const y = value => margin.top + chartHeight - (value / maxValue) * chartHeight;
+      const nationalY = y(nationalValue);
+
+      const bars = regions.map((item, index) => {
+        const x = margin.left + index * (barWidth + barGap);
+        const h = margin.top + chartHeight - y(item.value);
+        const label = item.region.replace("Bali-Nusa Tenggara", "Bali-NT").replace("Maluku-Papua", "Maluku-Papua");
+        return `
+          <rect x="${x}" y="${y(item.value)}" width="${barWidth}" height="${h}" rx="4" fill="${colors.region}"></rect>
+          <text x="${x + barWidth / 2}" y="${y(item.value) - 6}" text-anchor="middle" fill="#2f3a3e" font-size="12" font-weight="700">${formatValue(item.value)}</text>
+          <text x="${x + barWidth / 2}" y="${height - 42}" text-anchor="middle" fill="${colors.axis}" font-size="10">${label.split("-")[0]}</text>
+          <text x="${x + barWidth / 2}" y="${height - 28}" text-anchor="middle" fill="${colors.axis}" font-size="10">${label.split("-")[1] || ""}</text>
+        `;
+      }).join("");
+
+      const ticks = [0, 4, 8, 12].map(tick => `
+        <line x1="${margin.left - 5}" y1="${y(tick)}" x2="${width - margin.right}" y2="${y(tick)}" stroke="#edf1ed"></line>
+        <text x="${margin.left - 10}" y="${y(tick) + 4}" text-anchor="end" fill="${colors.axis}" font-size="11">${tick}</text>
+      `).join("");
+
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      svg.innerHTML = `
+        ${ticks}
+        <line x1="${margin.left}" y1="${nationalY}" x2="${width - margin.right}" y2="${nationalY}" stroke="${colors.national}" stroke-width="2" stroke-dasharray="5 5"></line>
+        ${bars}
+      `;
+    }
+
+    function drawHistogram() {
+      const svg = document.getElementById("histogram");
+      const bins = [
+        { label: "< 7", min: -Infinity, max: 7 },
+        { label: "7-8", min: 7, max: 8 },
+        { label: "8-9", min: 8, max: 9 },
+        { label: "9-10", min: 9, max: 10 },
+        { label: "10-11", min: 10, max: 11 },
+        { label: ">= 11", min: 11, max: Infinity }
+      ].map(bin => ({
+        ...bin,
+        count: data.filter(row => row.value >= bin.min && row.value < bin.max).length
+      }));
+      const width = 720;
+      const height = 260;
+      const margin = { top: 28, right: 28, bottom: 50, left: 42 };
+      const chartWidth = width - margin.left - margin.right;
+      const chartHeight = height - margin.top - margin.bottom;
+      const maxCount = Math.max(...bins.map(bin => bin.count));
+      const barGap = 12;
+      const barWidth = (chartWidth - barGap * (bins.length - 1)) / bins.length;
+      const y = count => margin.top + chartHeight - (count / maxCount) * chartHeight;
+
+      const bars = bins.map((bin, index) => {
+        const x = margin.left + index * (barWidth + barGap);
+        const h = margin.top + chartHeight - y(bin.count);
+        return `
+          <rect x="${x}" y="${y(bin.count)}" width="${barWidth}" height="${h}" rx="5" fill="${bin.label === "9-10" ? colors.high : colors.neutral}"></rect>
+          <text x="${x + barWidth / 2}" y="${y(bin.count) - 8}" text-anchor="middle" fill="#2f3a3e" font-size="13" font-weight="700">${bin.count}</text>
+          <text x="${x + barWidth / 2}" y="${height - 18}" text-anchor="middle" fill="${colors.axis}" font-size="12">${bin.label}</text>
+        `;
+      }).join("");
+
+      const ticks = [0, Math.ceil(maxCount / 2), maxCount].map(tick => `
+        <line x1="${margin.left - 5}" y1="${y(tick)}" x2="${width - margin.right}" y2="${y(tick)}" stroke="#edf1ed"></line>
+        <text x="${margin.left - 10}" y="${y(tick) + 4}" text-anchor="end" fill="${colors.axis}" font-size="11">${tick}</text>
+      `).join("");
+
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      svg.innerHTML = `${ticks}${bars}<text x="${width / 2}" y="${height - 2}" text-anchor="middle" fill="${colors.axis}" font-size="12">Rentang RLS dalam tahun</text>`;
+    }
+
+    function renderInsights(rows) {
+      const list = document.getElementById("insightList");
+      if (!rows.length) {
+        list.innerHTML = `<li class="warn">Tidak ada provinsi yang sesuai filter.</li>`;
+        return;
+      }
+      const sorted = rows.slice().sort((a, b) => b.value - a.value);
+      const top = sorted[0];
+      const bottom = sorted[sorted.length - 1];
+      const avg = average(rows);
+      const above = rows.filter(row => row.value >= nationalValue).length;
+      list.innerHTML = `
+        <li class="good">${top.province} menjadi nilai tertinggi pada tampilan ini dengan RLS ${formatValue(top.value)} tahun.</li>
+        <li class="warn">${bottom.province} menjadi nilai terendah pada tampilan ini dengan RLS ${formatValue(bottom.value)} tahun.</li>
+        <li>Rata-rata provinsi pada tampilan ini adalah ${formatValue(avg)} tahun, ${avg >= nationalValue ? "di atas" : "di bawah"} angka nasional.</li>
+        <li>${above} dari ${rows.length} provinsi pada tampilan ini berada pada atau di atas angka nasional ${formatValue(nationalValue)}.</li>
+      `;
+    }
+
+    function renderTable(rows) {
+      const sortedAll = data.slice().sort((a, b) => b.value - a.value);
+      const tbody = document.getElementById("rankTableBody");
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Tidak ada data yang sesuai filter.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = rows.map(row => {
+        const rank = sortedAll.findIndex(item => item.province === row.province) + 1;
+        const above = row.value >= nationalValue;
+        return `
+          <tr>
+            <td>${rank}</td>
+            <td>${row.province}</td>
+            <td>${row.region}</td>
+            <td><span class="status ${above ? "above" : "below"}">${above ? ">= nasional" : "< nasional"}</span></td>
+            <td>${formatValue(row.value)}</td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function refreshDashboard() {
+      const rows = filteredRows();
+      drawBarChart(rows);
+      renderInsights(rows);
+      renderTable(rows);
+    }
+
+    function buildSurveyQuestions() {
+      document.getElementById("questionList").innerHTML = questions.map((question, index) => {
+        const name = `q${index + 1}`;
+        const options = [1, 2, 3, 4, 5].map(score => `
+          <label>
+            <input type="radio" name="${name}" value="${score}" required>
+            <span>${score}</span>
+          </label>
+        `).join("");
+        return `
+          <div class="question">
+            <div class="question-title">${index + 1}. ${question}</div>
+            <div class="scale">${options}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function getResponses() {
+      try {
+        return JSON.parse(localStorage.getItem("rlsDashboardSurvey") || "[]");
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveResponses(responses) {
+      localStorage.setItem("rlsDashboardSurvey", JSON.stringify(responses));
+    }
+
+    function renderSurveySummary() {
+      const responses = getResponses();
+      const summary = document.getElementById("surveySummary");
+      const notice = document.getElementById("surveyNotice");
+      if (!responses.length) {
+        summary.innerHTML = "";
+        notice.textContent = "Belum ada respon tersimpan.";
+        return;
+      }
+
+      const averages = questions.map((_, index) => {
+        const key = `q${index + 1}`;
+        return responses.reduce((sum, response) => sum + Number(response[key]), 0) / responses.length;
+      });
+
+      summary.innerHTML = averages.map((score, index) => `
+        <div class="score-row">
+          <div>
+            <strong>P${index + 1}</strong>
+            <div class="score-track"><div class="score-fill" style="width: ${(score / 5) * 100}%"></div></div>
+          </div>
+          <strong>${score.toFixed(2)}</strong>
+        </div>
+      `).join("");
+      const lowest = averages.reduce((minIndex, score, index) => score < averages[minIndex] ? index : minIndex, 0);
+      notice.textContent = `${responses.length} respon tersimpan. Prioritas perbaikan sementara: Pernyataan ${lowest + 1} dengan rata-rata ${averages[lowest].toFixed(2)}.`;
+    }
+
+    function handleSurveySubmit(event) {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const formData = new FormData(form);
+      const response = {
+        timestamp: new Date().toISOString(),
+        name: document.getElementById("respondentName").value.trim() || "Anonim",
+        suggestion: document.getElementById("suggestion").value.trim()
+      };
+      questions.forEach((_, index) => {
+        response[`q${index + 1}`] = formData.get(`q${index + 1}`);
+      });
+      const responses = getResponses();
+      responses.push(response);
+      saveResponses(responses);
+      form.reset();
+      renderSurveySummary();
+    }
+
+    function exportSurveyCsv() {
+      const responses = getResponses();
+      const headers = ["timestamp", "name", "q1", "q2", "q3", "q4", "q5", "suggestion"];
+      const lines = [headers.join(",")].concat(responses.map(response => headers.map(header => {
+        const value = String(response[header] || "").replaceAll('"', '""');
+        return `"${value}"`;
+      }).join(",")));
+      const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "respon_survei_dashboard_rls_2025.csv";
+      document.body.append(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function resetSurvey() {
+      const ok = confirm("Hapus semua respon survei yang tersimpan di browser ini?");
+      if (!ok) return;
+      localStorage.removeItem("rlsDashboardSurvey");
+      renderSurveySummary();
+    }
+
+    function init() {
+      setTabs();
+      populateFilters();
+      renderMetrics();
+      drawRegionChart();
+      drawHistogram();
+      refreshDashboard();
+      buildSurveyQuestions();
+      renderSurveySummary();
+
+      document.getElementById("regionFilter").addEventListener("change", refreshDashboard);
+      document.getElementById("rankMode").addEventListener("change", refreshDashboard);
+      document.getElementById("searchBox").addEventListener("input", refreshDashboard);
+      document.getElementById("surveyForm").addEventListener("submit", handleSurveySubmit);
+      document.getElementById("exportSurvey").addEventListener("click", exportSurveyCsv);
+      document.getElementById("resetSurvey").addEventListener("click", resetSurvey);
+    }
+
+    init();
+  </script>
+</body>
+</html>
